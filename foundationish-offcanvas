@@ -1,12 +1,14 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <title>Foundation(ish) Off-Canvas</title>
-</head>
-<body>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css">
+    <title>Foundation(ish) Off-Canvas</title>
 
-<style class="base-styles">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css">
+
+
+    <style class="base-styles">
 
         /* Base  */
         :root {
@@ -41,8 +43,9 @@
         }
         
     </style>
+
  
-<style id="drop-down-styles">
+    <style id="drop-down-styles">
         /**
          * AccNavigationDropDownMenu styles.
          * 
@@ -143,23 +146,43 @@
     
     </style>
 
-<style id="off-canvas-styles">
+
+    <style id="off-canvas-styles">
 
         /* Off-Canvas  */
 
+        :root {
+            /* Offcanvas Menu Content */
+            --acc-offcanvas-menu-toogle-duration: 0.5s;
+            --acc-offcanvas-menu-overlay-duration: 0.15s;
+
+            /* Offcanvas Submenus */
+            --acc-offcanvas-submneu-toogle-duration: 0.75s;
+            --acc-offcanvas-submneu-toogle-delay: 0.05s;
+            --acc-offcanvas-submenu-opacity-duration: 0.75s;
+            --acc-offcanvas-submenu-opacity-delay: 0.2s;
+        }
+
         @keyframes offcanvas-submenu-fadein {
             from {
-                opacity: 0;
                 max-height: 0.1px;
             }
             to {
+                max-height: 10000px;
+            }
+        }
+        @keyframes offcanvas-submenu-opacity {
+            from {
+                opacity: 0.1;
+            }
+            to {
                 opacity: 1;
-                max-height: 1000px;
             }
         }
 
         nav.nvjs-offcanvas.nvjs-offcanvas--is-active {
-            justify-self: flex-end;
+            justify-content: flex-end;
+            display: flex;
 
             & ul:not([hidden]) {
                 list-style: none;
@@ -182,13 +205,30 @@
                 position: relative;
 
                 & ul[id] {
-                    opacity: 0;
                     max-height: 0.1px;
+                    opacity: 0;
+                    will-change: opacity;
+
+                    @media (prefers-reduced-motion) {
+                        & {
+                            max-height: unset;
+                        }
+                    }
                 }
 
                 & ul:not([hidden]) {
                     padding-left: 1.5rem;
-                    animation: offcanvas-submenu-fadein 0.25s 0.1s ease-in-out forwards;
+                    animation: offcanvas-submenu-fadein var(--acc-offcanvas-submneu-toogle-duration, 1.25s) var(--acc-offcanvas-submneu-toogle-delay, 0.1s) ease-in-out forwards, offcanvas-submenu-opacity var(--acc-offcanvas-submenu-opacity-duration, 0.25s) var(--acc-offcanvas-submenu-opacity-delay, 0.25s) ease-in-out forwards;
+                    @media (prefers-reduced-motion) {
+                        & {
+                            opacity: 1;
+                            animation: none !important;
+                        }
+                    }
+                }
+
+                & ul[id]:not([hidden]) {
+                    --acc-offcanvas-submenu-opacity-duration: 0.55s;
                 }
 
                 & li {
@@ -230,14 +270,9 @@
                 }
             }
 
-            & ul {
-
-            }
+            & ul {}
 
             @media all and (max-width: 1200px) {
-                & .nav-content {
-                    transition: transform 0.9s ease-in-out, box-shadow 0.6s ease-out;
-                }
 
                 & .nav-content {
                     position: fixed;
@@ -252,14 +287,27 @@
                     box-shadow: 0 0 0 150vmax rgba(0, 0, 0, 0);
 
                     transform: translate3d(-100%, 0, 0);
-                    transition: transform 0.5s cubic-bezier(.42,0,.58,1), 
-                                -webkit-transform 0.5s cubic-bezier(.42,0,.58,1);
                     will-change: transform;
+                }
+
+                &.nvjs-offcanvas--add-transition .nav-content {
+                    transition: transform var(--acc-offcanvas-menu-toogle-duration) cubic-bezier(.42,0,.58,1),
+                                box-shadow var(--acc-offcanvas-menu-overlay-duration) ease-out;
                 }
 
                 & .nav-toggle[aria-expanded=true] + .nav-content {
                     transform: translate3d(0, 0, 0);
                     box-shadow: 0 0 0 150vmax rgba(0, 0, 0, 0.75);
+                }
+
+                &.nvjs-offcanvas--position-right .nav-toggle[aria-expanded=false] + .nav-content {
+                    inset: 0 0 0 auto;
+                    transform: translate3d(100%, 0, 0);
+                }
+
+                &.nvjs-offcanvas--position-right .nav-toggle[aria-expanded=true] + .nav-content {
+                    transform: translate3d(0, 0, 0);
+                    inset: 0 0 0 auto;
                 }
 
                 & .nvjs-offcanvas-close {
@@ -302,8 +350,8 @@
                     padding: 0.5em 0.25em;
                 }
                 & .nav-toggle[aria-expanded=true] {
-                    border: none;
-                    margin-bottom: 0.5em;
+                    border: none !important;
+                    margin-bottom: 0 !important;
                 }
                 & .nav-toggle[aria-expanded=true] svg {
                     transform: none;
@@ -340,12 +388,14 @@
 
     </style>
 
+</head>
+
+<body>
+    
+    <header id="main-header">
 
 
-<header id="main-header">
-
-
-        <nav aria-label="Site Navigation" id="site-nav" class="nvjs-offcanvas site-navigation site-nav">
+        <nav aria-label="Site Navigation" id="site-nav" class="nvjs-offcanvas nvjs-offcanvas--position-right site-navigation site-nav">
 
             
             <button hidden aria-expanded="false" id="nav-toggle" class="nvjs-offcanvas-toggle nav-toggle">
@@ -359,19 +409,20 @@
             </button>
 
             
-            <div id="nav-content" class="nvjs-offcanvas-content nav-content">
+            <div id="nav-content" class="nvjs-offcanvas-content nvjs-offcanvas-panel nav-content">
 
                 <button hidden id="nvjs-offcanvas-close" class="nvjs-offcanvas-close">
-                    Close
+                    <svg width="1.5em" height="1.5em" viewBox="0 0 384 512"><path d="M345 137l17-17L328 86.1l-17 17-119 119L73 103l-17-17L22.1 120l17 17 119 119L39 375l-17 17L56 425.9l17-17 119-119L311 409l17 17L361.9 392l-17-17-119-119L345 137z"/></svg>
+                    <span class="show-for-sr">Close</span>
                 </button>
                 
-                <ul role="list">
+                <ul class="nvjs-offcanvas-navmenu" role="list">
 
-                    <li class="menu-item menu-item-has-children" data-has-children>
+                    <li class="menu-item menu-item-has-children">
 
                         <a href="#">Products</a>
 
-                        <ul role="list">
+                        <ul role="list" class="sub-menu">
 
                             <li>
                                 <a href="/home/" aria-current="page">Kitchen</a>
@@ -381,7 +432,7 @@
                                 <a href="/home/">Bathroom</a>
                             </li>
                             
-                            <li data-has-children>
+                            <li>
                                 <a href="/">Personal Care</a>
                                 <ul role="list">
                                     <li><a href="#">Hair care</a></li>
@@ -393,7 +444,7 @@
 
                     </li>
 
-                    <li class="menu-item menu-item-has-children" data-has-children>
+                    <li class="menu-item menu-item-has-children">
 
                         <a href="#">Team</a>
 
@@ -415,20 +466,20 @@
             
         </nav>
 
-
     </header>
 
-<main id="main">
+    <main id="main">
 
-  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <a href="#">a link</a> Eaque veniam esse dolores cupiditate. Corrupti quam deleniti commodi porro natus accusantium perspiciatis voluptates officia sit rerum, placeat eum, illum quisquam. Amet?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <a href="#">a link</a> Eaque veniam esse dolores cupiditate. Corrupti quam deleniti commodi porro natus accusantium perspiciatis voluptates officia sit rerum, placeat eum, illum quisquam. Amet?</p>
 
-</main>
+    </main>
 
-<footer id="main-footer">
-    <p>Site Footer</p>
-</footer>
+    <footer id="main-footer">
+        <p>Site Footer</p>
+    </footer>
 
-<script>
+
+    <script>
 
 
         /**
@@ -912,6 +963,7 @@
                 let offcanvasIsVisible = true;
                 
 
+
                 /**
                  * Close the Off-Canvas menu.
                  */
@@ -945,6 +997,8 @@
                     // });
                 }
 
+
+
                 /**
                  * Open the Off-Canvas menu.
                  */
@@ -960,9 +1014,11 @@
                     $offCanvasClose.focus();
                 }
 
+
                 function removeNavInert() {
                     $offCanvasContent.removeAttribute("inert");
                 }
+
 
                 function setPageInert() {
                     if (main) {
@@ -976,6 +1032,7 @@
                         _nav_siblings[i].setAttribute("inert", "true");
                     }
                 }
+
 
                 function removeInertPage() {
 
@@ -995,11 +1052,13 @@
 
                 }
 
+
                 function setInertOffcanvas() {
 
                     $offCanvasContent.setAttribute('inert', '');
 
                 }
+
 
                 function closeNavWhenFocusLeaves( element ) {
 
@@ -1092,11 +1151,17 @@
                       cancelable: true
                     } );
                     
+                    
                     // is "desktop"
                     if ( ev.matches ) {
                         
                         $nav.classList.remove('nvjs-offcanvas--is-active');
                         $nav.classList.add('nvjs-offcanvas--is-resting');
+
+                        setTimeout( function () {
+                            $nav.classList.remove('nvjs-offcanvas--add-transition');
+                        }, 150 );
+
                         $nav.dispatchEvent(onDisabledOffcanvasEvent);
 
                         $offCanvasContent.removeAttribute("hidden");
@@ -1119,9 +1184,17 @@
                         // Check previous statements that are redundant when using the fn closeOffcanvas.
 
 
-                    } else {
+                    } 
+
+                    // is Mobile - Show the off-canvas
+                    else {
                         $nav.classList.add('nvjs-offcanvas--is-active');
                         $nav.classList.remove('nvjs-offcanvas--is-resting');
+                        
+                        setTimeout( function () {
+                            $nav.classList.add('nvjs-offcanvas--add-transition');
+                        }, 150 );
+
                         $nav.dispatchEvent(onActiveOffcanvasEvent);
 
                         $offCanvasToggle.removeAttribute("hidden");
@@ -1135,9 +1208,10 @@
                             removeNavInert();
                         }
 
-                        //$offCanvasToggle.addEventListener("click", showNavigationContent, false);
                     }
+
                 };
+
 
 
                 /**
@@ -1185,7 +1259,8 @@
 
 
 
-<script id="reference-only">
+
+    <script id="reference-only">
 
         class Canvi {
 
@@ -1485,7 +1560,5 @@
         }
 
     </script>
-
-
 </body>
 </html>
