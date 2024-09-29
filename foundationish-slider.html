@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation(ish) Slider</title>
+</head>
+<body>
+    <style>
+.carousel {
+  overflow: hidden;
+  width: 100%;
+  height: 300px;
+  position: relative;
+}
+
+.carousel-wrapper {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.slide {
+  min-width: 100%;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  height: 300px;
+}
+
+/* Pagination dots */
+.pagination-dots {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 5px;
+  transition: background-color 0.3s;
+}
+
+.dot.active {
+  background-color: #717171;
+}
+    </style>
+
+    <section>
+
+        <div class="carousel">
+            <div class="carousel-wrapper">
+              <div class="slide">Slide 1</div>
+              <div class="slide">Slide 2</div>
+              <div class="slide">Slide 3</div>
+              <div class="slide">Slide 4</div>
+            </div>
+          </div>
+          
+          <!-- Pagination dots -->
+          <div class="pagination-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+
+
+    </section>
+
+    <script>
+const slides = document.querySelectorAll('.slide');
+const carouselWrapper = document.querySelector('.carousel-wrapper');
+const dots = document.querySelectorAll('.dot');
+
+let observerOptions = {
+  root: document.querySelector('.carousel'),
+  threshold: 0.5  // Fires when at least 50% of the slide is visible
+};
+
+let observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      let visibleSlideIndex = [...slides].indexOf(entry.target);
+
+      // Highlight the visible slide's corresponding dot
+      dots.forEach(dot => dot.classList.remove('active'));
+      dots[visibleSlideIndex].classList.add('active');
+      
+      // Optional: Change slide background to highlight
+      entry.target.style.backgroundColor = '#ccc';
+    } else {
+      entry.target.style.backgroundColor = '#eee'; // Reset when not visible
+    }
+  });
+}, observerOptions);
+
+// Attach the observer to each slide
+slides.forEach(slide => {
+  observer.observe(slide);
+});
+
+// Add click event to dots to allow users to navigate to slides
+dots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    // Move to the corresponding slide
+    const slideWidth = slides[0].clientWidth;
+    carouselWrapper.style.transform = `translateX(-${slideWidth * index}px)`;
+
+    // Manually update active dot
+    dots.forEach(dot => dot.classList.remove('active'));
+    dot.classList.add('active');
+  });
+});
+    </script>
+</body>
+</html>
